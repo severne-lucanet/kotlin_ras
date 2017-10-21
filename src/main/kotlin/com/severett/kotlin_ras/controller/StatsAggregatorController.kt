@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.bus.Event
-import reactor.bus.selector.ObjectSelector
+import reactor.bus.selector.Selectors
 import java.io.IOException
 import java.io.InputStream
 import java.time.Instant
@@ -34,8 +34,8 @@ open class StatsAggregatorController(
         val LOGS_EVENT = "log_files"
     }
     init {
-        this.eventBus.on(ObjectSelector<String, String>(STATS_EVENT), statProcessorService)
-        this.eventBus.on(ObjectSelector<String, String>(LOGS_EVENT), logProcessorService)
+        this.eventBus.on(Selectors.`$`(STATS_EVENT), statProcessorService)
+        this.eventBus.on(Selectors.`$`(LOGS_EVENT), logProcessorService)
     }
     
     @RequestMapping(value = "/{computerUuid}/upload_statistics", method = arrayOf(RequestMethod.POST), consumes = arrayOf("application/json"))
