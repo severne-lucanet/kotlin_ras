@@ -1,9 +1,9 @@
 package com.severett.kotlin_ras.controller
 
 import com.severett.kotlin_ras.dto.InputDTO
-import com.severett.kotlin_ras.reactor.SAEventBus
 import com.severett.kotlin_ras.service.LogProcessorService
 import com.severett.kotlin_ras.service.StatProcessorService
+import io.reactivex.rxkotlin.toSingle
 import org.apache.commons.compress.utils.IOUtils
 import org.json.JSONException
 import org.json.JSONObject
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import reactor.bus.Event
-import reactor.bus.selector.Selectors
 import java.io.IOException
 import java.io.InputStream
 import java.time.Instant
@@ -24,18 +22,11 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping("/stats")
 open class StatsAggregatorController(
-        private val eventBus:SAEventBus,
-        statProcessorService:StatProcessorService,
-        logProcessorService:LogProcessorService
+        private val statProcessorService:StatProcessorService,
+        private val logProcessorService:LogProcessorService
 ) {
     companion object {
-        val LOGGER = LoggerFactory.getLogger(StatsAggregatorController::class.java.name)
-        val STATS_EVENT = "statistics"
-        val LOGS_EVENT = "log_files"
-    }
-    init {
-        this.eventBus.on(Selectors.`$`(STATS_EVENT), statProcessorService)
-        this.eventBus.on(Selectors.`$`(LOGS_EVENT), logProcessorService)
+        private val LOGGER = LoggerFactory.getLogger(StatsAggregatorController::class.java.name)
     }
     
     @RequestMapping(value = "/{computerUuid}/upload_statistics", method = arrayOf(RequestMethod.POST), consumes = arrayOf("application/json"))
@@ -44,7 +35,9 @@ open class StatsAggregatorController(
         LOGGER.debug("Received statistics upload from $computerUuid: $requestBody")
         if (timestamp != null) {
             try {
-                eventBus.notify(STATS_EVENT, Event.wrap(InputDTO<JSONObject>(computerUuid, JSONObject(requestBody), Instant.ofEpochSecond(timestamp))))
+                InputDTO<JSONObject>(computerUuid, JSONObject(requestBody), Instant.ofEpochSecond(timestamp))
+                        .toSingle()
+                        .subscribe(statProcessorService::processStats)
                 response.setStatus(HttpServletResponse.SC_OK)
             } catch (jsone:JSONException) {
                 LOGGER.error("Error parsing JSON stats data from $computerUuid: ${jsone.message}")
@@ -67,7 +60,9 @@ open class StatsAggregatorController(
             try {
                 // Need to transfer the input stream in the controller, otherwise
                 // the input stream will close when this function terminates
-                eventBus.notify(LOGS_EVENT, Event.wrap(InputDTO<ByteArray>(computerUuid, IOUtils.toByteArray(zipInputStream), Instant.ofEpochSecond(timestamp))))
+                InputDTO<ByteArray>(computerUuid, IOUtils.toByteArray(zipInputStream), Instant.ofEpochSecond(timestamp))
+                        .toSingle()
+                        .subscribe(logProcessorService::processLogFile)
                 response.setStatus(HttpServletResponse.SC_OK)
             } catch (ioe:IOException) {
                 LOGGER.error("Error parsing log data from $computerUuid: ${ioe.message}")

@@ -19,7 +19,6 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.runners.MockitoJUnitRunner
 import org.slf4j.LoggerFactory
-import reactor.bus.Event
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -56,7 +55,7 @@ class LogProcessorServiceTest {
         var inputStream:InputStream? = null
         try {
             inputStream = FileInputStream(testLogFile)
-            logProcessorService.accept(Event.wrap(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant())))
+            logProcessorService.processLogFile(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
             Mockito.verify(appender, Mockito.times(1)).doAppend(captorLoggingEvent.capture())
         } finally {
             inputStream?.close()
@@ -69,7 +68,7 @@ class LogProcessorServiceTest {
         var inputStream:InputStream? = null
         try {
             inputStream = FileInputStream(testLogFile)
-            logProcessorService.accept(Event.wrap(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant())))
+            logProcessorService.processLogFile(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
             Mockito.verify(appender, Mockito.times(2)).doAppend(captorLoggingEvent.capture())
             Assert.assertThat(captorLoggingEvent.getAllValues().stream().anyMatch({
                     it.formattedMessage.equals("Error processing log data from abc123: archive is not a ZIP archive")
@@ -85,7 +84,7 @@ class LogProcessorServiceTest {
         var inputStream:InputStream? = null
         try {
             inputStream = FileInputStream(testLogFile)
-            logProcessorService.accept(Event.wrap(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant())))
+            logProcessorService.processLogFile(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
             Mockito.verify(appender, Mockito.times(2)).doAppend(captorLoggingEvent.capture())
             Assert.assertThat(captorLoggingEvent.getAllValues().stream().anyMatch( {
                     it.getFormattedMessage().equals("Error processing log data from abc123: archive is not a ZIP archive")

@@ -5,7 +5,6 @@ import com.severett.kotlin_ras.exception.StatsParserException
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import reactor.bus.Event
 
 @Service
 open class StatProcessorServiceImpl(
@@ -16,8 +15,7 @@ open class StatProcessorServiceImpl(
         val LOGGER = LoggerFactory.getLogger(StatProcessorServiceImpl::class.java.name)
     }
     
-    override fun accept(event : Event<InputDTO<JSONObject>>) {
-        val inputDTO = event.data
+    override fun processStats(inputDTO:InputDTO<JSONObject>) {
         val computerUuid = inputDTO.computerUuid
         LOGGER.debug("Processing statistics for computer $computerUuid")
         try {

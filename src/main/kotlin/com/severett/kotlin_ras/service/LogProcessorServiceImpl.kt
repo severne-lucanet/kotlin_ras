@@ -6,7 +6,6 @@ import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import reactor.bus.Event
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -21,8 +20,7 @@ open class LogProcessorServiceImpl(
         val LOGGER = LoggerFactory.getLogger(LogProcessorServiceImpl::class.java.name)
     }
     
-    override fun accept(event : Event<InputDTO<ByteArray>>) {
-        val inputDTO = event.getData();
+    override fun processLogFile(inputDTO:InputDTO<ByteArray>) {
         LOGGER.debug("Processing log files for computer ${inputDTO.computerUuid}")
         var inMemoryByteChannel:SeekableInMemoryByteChannel? = null
         var zipFile:ZipFile? = null
