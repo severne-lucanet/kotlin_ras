@@ -9,7 +9,6 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
-import kotlin.reflect.jvm.internal.impl.load.java.structure.JavaClass
 
 @Service
 open class CSVPersisterServiceImpl (
@@ -18,11 +17,11 @@ open class CSVPersisterServiceImpl (
         @Value("\${com.severett.rapid_stats_aggregator.csv.logsFile}") logsFile:String
 ) : PersisterService {
     companion object {
-        val DELIMITER = "###"
-        val LOGGER = LoggerFactory.getLogger(CSVPersisterServiceImpl::class.java.name)
+        private const val DELIMITER = "###"
     }
-    val statsFilePath = Paths.get(csvFileDirectory, compStatsFile)
-    val logFilePath = Paths.get(csvFileDirectory, logsFile)
+    private val LOGGER = LoggerFactory.getLogger(CSVPersisterServiceImpl::class.java.name)
+    private val statsFilePath = Paths.get(csvFileDirectory, compStatsFile)
+    private val logFilePath = Paths.get(csvFileDirectory, logsFile)
     
     override fun saveComputerStats(computerStats:ComputerStats) {
         val sb = StringBuilder()

@@ -14,9 +14,7 @@ import javax.validation.Validation
 open class StatsParserServiceImpl : StatsParserService {
     private val objMapper = ObjectMapper()
     private val validatorFactory = Validation.buildDefaultValidatorFactory()
-    companion object {
-        val LOGGER = LoggerFactory.getLogger(StatsParserServiceImpl::class.java.name)
-    }
+    private val LOGGER = LoggerFactory.getLogger(StatsParserServiceImpl::class.java.name)
     
     override fun parseComputerStats(inputDTO:InputDTO<JSONObject>) : ComputerStats {
         try {

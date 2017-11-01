@@ -16,9 +16,7 @@ import java.util.stream.Collectors
 open class LogProcessorServiceImpl(
         private val persisterService:PersisterService
 ) : LogProcessorService {
-    companion object {
-        val LOGGER = LoggerFactory.getLogger(LogProcessorServiceImpl::class.java.name)
-    }
+    private val LOGGER = LoggerFactory.getLogger(LogProcessorServiceImpl::class.java.name)
     
     override fun processLogFile(inputDTO:InputDTO<ByteArray>) {
         LOGGER.debug("Processing log files for computer ${inputDTO.computerUuid}")

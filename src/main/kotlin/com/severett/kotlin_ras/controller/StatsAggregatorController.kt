@@ -25,9 +25,7 @@ open class StatsAggregatorController(
         private val statProcessorService:StatProcessorService,
         private val logProcessorService:LogProcessorService
 ) {
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(StatsAggregatorController::class.java.name)
-    }
+    private val LOGGER = LoggerFactory.getLogger(StatsAggregatorController::class.java.name) 
     
     @RequestMapping(value = "/{computerUuid}/upload_statistics", method = arrayOf(RequestMethod.POST), consumes = arrayOf("application/json"))
     fun uploadStats(response:HttpServletResponse, @PathVariable("computerUuid") computerUuid:String,

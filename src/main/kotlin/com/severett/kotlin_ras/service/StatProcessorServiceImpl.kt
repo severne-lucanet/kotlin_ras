@@ -11,9 +11,7 @@ open class StatProcessorServiceImpl(
         private val statsParserService:StatsParserService,
         private val persisterService:PersisterService
 ) : StatProcessorService {
-    companion object {
-        val LOGGER = LoggerFactory.getLogger(StatProcessorServiceImpl::class.java.name)
-    }
+    private val LOGGER = LoggerFactory.getLogger(StatProcessorServiceImpl::class.java.name)
     
     override fun processStats(inputDTO:InputDTO<JSONObject>) {
         val computerUuid = inputDTO.computerUuid
