@@ -66,7 +66,7 @@ class StatsParserServiceTest() {
         inputJSON.put("memoryCapacity", -5)
         inputJSON.put("memoryUsage", -5)
         try {
-            val parsedStats = statsParserService.parseComputerStats(InputDTO<JSONObject>("abc123", inputJSON, Clock.systemUTC().instant()))
+            statsParserService.parseComputerStats(InputDTO<JSONObject>("abc123", inputJSON, Clock.systemUTC().instant()))
             Assert.fail("Expected a StatsParserException, yet none was raised")
         } catch (spe:StatsParserException) {
             // No-op - expected behavior
@@ -83,7 +83,7 @@ class StatsParserServiceTest() {
         inputJSON.put("memoryCapacity", 1000000)
         inputJSON.put("memoryUsage", 100000)
         try {
-            val parsedStats = statsParserService.parseComputerStats(InputDTO<JSONObject>("abc123", inputJSON, Clock.systemUTC().instant()))
+            statsParserService.parseComputerStats(InputDTO<JSONObject>("abc123", inputJSON, Clock.systemUTC().instant()))
             Assert.fail("Expected a StatsParserException, yet none was raised")
         } catch (spe:StatsParserException) {
             // No-op - expected behavior

@@ -25,7 +25,7 @@ open class StatsAggregatorController(
         private val statProcessorService:StatProcessorService,
         private val logProcessorService:LogProcessorService
 ) {
-    private val LOGGER = LoggerFactory.getLogger(StatsAggregatorController::class.java.name) 
+    private val LOGGER = LoggerFactory.getLogger(StatsAggregatorController::class.java.name)
     
     @RequestMapping(value = "/{computerUuid}/upload_statistics", method = arrayOf(RequestMethod.POST), consumes = arrayOf("application/json"))
     fun uploadStats(response:HttpServletResponse, @PathVariable("computerUuid") computerUuid:String,
@@ -35,18 +35,18 @@ open class StatsAggregatorController(
             try {
                 InputDTO<JSONObject>(computerUuid, JSONObject(requestBody), Instant.ofEpochSecond(timestamp))
                         .toSingle()
-                        .subscribe(statProcessorService::processStats)
-                response.setStatus(HttpServletResponse.SC_OK)
+                        .subscribe(statProcessorService)
+                response.status = HttpServletResponse.SC_OK
             } catch (jsone:JSONException) {
                 LOGGER.error("Error parsing JSON stats data from $computerUuid: ${jsone.message}")
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+                response.status = HttpServletResponse.SC_BAD_REQUEST
             } catch (e:Exception) {
                 LOGGER.error("Unexpected error in uploadStats: ${e.message} (${e.javaClass.name})")
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
             }
         } else {
             LOGGER.warn("Record did not have a timestamp attached - skipping")
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+            response.status = HttpServletResponse.SC_BAD_REQUEST
         }
     }
     
@@ -60,18 +60,18 @@ open class StatsAggregatorController(
                 // the input stream will close when this function terminates
                 InputDTO<ByteArray>(computerUuid, IOUtils.toByteArray(zipInputStream), Instant.ofEpochSecond(timestamp))
                         .toSingle()
-                        .subscribe(logProcessorService::processLogFile)
-                response.setStatus(HttpServletResponse.SC_OK)
+                        .subscribe(logProcessorService)
+                response.status = HttpServletResponse.SC_OK
             } catch (ioe:IOException) {
                 LOGGER.error("Error parsing log data from $computerUuid: ${ioe.message}")
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+                response.status = HttpServletResponse.SC_BAD_REQUEST
             } catch (e:Exception) {
                 LOGGER.error("Unexpected error in uploadStats: ${e.message} (${e.javaClass.name})")
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
             }
         } else {
             LOGGER.warn("Log file did not have a timestamp attached - skipping")
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+            response.status = HttpServletResponse.SC_BAD_REQUEST
         }
     }
 }

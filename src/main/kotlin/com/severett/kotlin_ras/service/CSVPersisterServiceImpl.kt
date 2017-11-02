@@ -16,17 +16,21 @@ open class CSVPersisterServiceImpl (
         @Value("\${com.severett.rapid_stats_aggregator.csv.compStatsFile}") compStatsFile:String,
         @Value("\${com.severett.rapid_stats_aggregator.csv.logsFile}") logsFile:String
 ) : PersisterService {
-    companion object {
-        private const val DELIMITER = "###"
-    }
     private val LOGGER = LoggerFactory.getLogger(CSVPersisterServiceImpl::class.java.name)
     private val statsFilePath = Paths.get(csvFileDirectory, compStatsFile)
     private val logFilePath = Paths.get(csvFileDirectory, logsFile)
+    init {
+        Files.createDirectories(statsFilePath.parent)
+        Files.createDirectories(logFilePath.parent)
+    }
+    companion object {
+        private const val DELIMITER = "###"
+    }
     
     override fun saveComputerStats(computerStats:ComputerStats) {
         val sb = StringBuilder()
         sb.append(computerStats.computerUuid).append(DELIMITER)
-        sb.append(computerStats.timestamp?.getEpochSecond()).append(DELIMITER)
+        sb.append(computerStats.timestamp?.epochSecond).append(DELIMITER)
         sb.append(computerStats.productVersion).append(DELIMITER)
         sb.append(computerStats.operatingSystem).append(DELIMITER)
         sb.append(computerStats.processCPULoad).append(DELIMITER)
@@ -47,7 +51,7 @@ open class CSVPersisterServiceImpl (
     override fun saveLogFile(logFile:LogFile) {
         val sb = StringBuilder();
         sb.append(logFile.computerUuid).append(DELIMITER)
-        sb.append(logFile.timestamp?.getEpochSecond()).append(DELIMITER)
+        sb.append(logFile.timestamp?.epochSecond).append(DELIMITER)
         sb.append(logFile.content?.replace("\n", "\t")).append("\n")
         
         try {

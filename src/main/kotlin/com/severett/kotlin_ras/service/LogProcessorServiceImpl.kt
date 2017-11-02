@@ -2,6 +2,7 @@ package com.severett.kotlin_ras.service
 
 import com.severett.kotlin_ras.dto.InputDTO
 import com.severett.kotlin_ras.model.LogFile
+import io.reactivex.disposables.Disposable
 import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel
 import org.slf4j.LoggerFactory
@@ -17,8 +18,8 @@ open class LogProcessorServiceImpl(
         private val persisterService:PersisterService
 ) : LogProcessorService {
     private val LOGGER = LoggerFactory.getLogger(LogProcessorServiceImpl::class.java.name)
-    
-    override fun processLogFile(inputDTO:InputDTO<ByteArray>) {
+
+    override fun onSuccess(inputDTO:InputDTO<ByteArray>) {
         LOGGER.debug("Processing log files for computer ${inputDTO.computerUuid}")
         var inMemoryByteChannel:SeekableInMemoryByteChannel? = null
         var zipFile:ZipFile? = null
@@ -38,5 +39,13 @@ open class LogProcessorServiceImpl(
             zipFile?.close()
             inputStream?.close()
         }
+    }
+
+    override fun onError(e:Throwable) {
+        LOGGER.error("Error in LogProcessorServiceImpl: ${e.message}")
+    }
+
+    override fun onSubscribe(disposable:Disposable) {
+        //No-op
     }
 }

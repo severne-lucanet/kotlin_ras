@@ -55,7 +55,7 @@ class LogProcessorServiceTest {
         var inputStream:InputStream? = null
         try {
             inputStream = FileInputStream(testLogFile)
-            logProcessorService.processLogFile(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
+            logProcessorService.onSuccess(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
             Mockito.verify(appender, Mockito.times(1)).doAppend(captorLoggingEvent.capture())
         } finally {
             inputStream?.close()
@@ -68,7 +68,7 @@ class LogProcessorServiceTest {
         var inputStream:InputStream? = null
         try {
             inputStream = FileInputStream(testLogFile)
-            logProcessorService.processLogFile(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
+            logProcessorService.onSuccess(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
             Mockito.verify(appender, Mockito.times(2)).doAppend(captorLoggingEvent.capture())
             Assert.assertThat(captorLoggingEvent.getAllValues().stream().anyMatch({
                     it.formattedMessage.equals("Error processing log data from abc123: archive is not a ZIP archive")
@@ -84,7 +84,7 @@ class LogProcessorServiceTest {
         var inputStream:InputStream? = null
         try {
             inputStream = FileInputStream(testLogFile)
-            logProcessorService.processLogFile(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
+            logProcessorService.onSuccess(InputDTO<ByteArray>("abc123", IOUtils.toByteArray(inputStream), Clock.systemUTC().instant()))
             Mockito.verify(appender, Mockito.times(2)).doAppend(captorLoggingEvent.capture())
             Assert.assertThat(captorLoggingEvent.getAllValues().stream().anyMatch( {
                     it.getFormattedMessage().equals("Error processing log data from abc123: archive is not a ZIP archive")

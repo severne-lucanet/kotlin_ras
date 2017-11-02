@@ -22,13 +22,12 @@ open class StatsParserServiceImpl : StatsParserService {
             val computerStats = objMapper.readValue(inputDTO.payload.toString(), ComputerStats::class.java)
             computerStats.computerUuid = inputDTO.computerUuid
             computerStats.timestamp = inputDTO.timestamp
-            val validator = validatorFactory.getValidator()
-            val constraintViolations = validator.validate(computerStats)
+            val constraintViolations = validatorFactory.validator.validate(computerStats)
             if (constraintViolations.isEmpty()) {
                 return computerStats
             } else {
                 throw StatsParserException(constraintViolations.map { 
-                    "${it.getPropertyPath()} value '${it.getInvalidValue()}' ${it.getMessage()}"
+                    "${it.propertyPath} value '${it.invalidValue}' ${it.message}"
                 }.joinToString(";"))
             }
         } catch (ex:Exception) {
