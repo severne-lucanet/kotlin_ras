@@ -20,8 +20,7 @@ open class CSVPersisterServiceImpl (
     private val statsFilePath = Paths.get(csvFileDirectory, compStatsFile)
     private val logFilePath = Paths.get(csvFileDirectory, logsFile)
     init {
-        Files.createDirectories(statsFilePath.parent)
-        Files.createDirectories(logFilePath.parent)
+        Files.createDirectories(Paths.get(csvFileDirectory))
     }
     companion object {
         private const val DELIMITER = "###"
